@@ -1,307 +1,652 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trak Recovery</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Trak Recovery — Final</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: #0d0d0d;
-    color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-    text-align: center;
+  :root{
+    --bg:#061018; --card:#0b1316; --muted:#9fb0b6; --accent:#42e6c6;
+    --accent-2:#7ff8dd; --danger:#ff6b6b; --glass:rgba(255,255,255,0.02);
+    --glass-2:rgba(255,255,255,0.03); --shadow: 0 8px 30px rgba(2,6,10,0.6);
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
-  header {
-    padding: 20px;
-    font-size: 1.5em;
-    font-weight: bold;
-    background-color: #111;
-    border-bottom: 1px solid #222;
-  }
-  nav {
-    display: flex;
-    justify-content: space-around;
-    background-color: #111;
-    padding: 10px 0;
-    position: sticky;
-    bottom: 0;
-  }
-  nav button {
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 1em;
-    cursor: pointer;
-  }
-  nav button.active {
-    color: #4cafef;
-  }
-  .page {
-    display: none;
-    padding: 20px;
-  }
-  .active-page {
-    display: block;
-  }
-  .stat {
-    margin: 15px 0;
-    font-size: 1.2em;
-  }
-  button {
-    padding: 12px 18px;
-    margin: 8px;
-    background-color: #1f1f1f;
-    border: none;
-    color: white;
-    font-size: 1em;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  button:hover {
-    background-color: #333;
-  }
-  .xp-bar {
-    width: 80%;
-    background-color: #222;
-    border-radius: 10px;
-    margin: 10px auto;
-    height: 20px;
-    overflow: hidden;
-  }
-  .xp-fill {
-    height: 100%;
-    background-color: #4cafef;
-    width: 0%;
-    transition: width 0.4s;
-  }
-  textarea {
-    width: 80%;
-    padding: 8px;
-    margin: 10px 0;
-    background: #111;
-    border: 1px solid #333;
-    color: white;
-    border-radius: 5px;
-  }
-  .milestone {
-    background: #111;
-    border: 1px solid #333;
-    padding: 10px;
-    border-radius: 8px;
-    margin: 8px 0;
-    text-align: left;
-  }
-  .milestone.reached {
-    border-color: #4cafef;
-    background: #0a1a26;
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;padding:16px;background:linear-gradient(180deg,var(--bg),#031217 140%);color:#e8fbf5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,#052a2a,#0b2333);display:grid;place-items:center;box-shadow:var(--shadow)}
+  .title{font-size:18px;font-weight:700}
+  .subtitle{font-size:13px;color:var(--muted)}
+  .mode-pill{padding:8px 12px;background:var(--glass);border-radius:999px;color:var(--muted);font-weight:600}
+  main.card{background:linear-gradient(180deg,var(--card),#031018);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+  .row{display:flex;gap:12px;align-items:center}
+  .big{font-size:46px;font-weight:800;letter-spacing:0.5px}
+  .label{color:var(--muted);font-size:13px}
+  .muted{color:var(--muted)}
+  .xp-bar{height:14px;background:var(--glass);border-radius:999px;overflow:hidden;margin-top:10px}
+  .xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0;transition:width .6s}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  button.btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px 12px;border-radius:10px;color:#e8fbf5;font-weight:700;cursor:pointer}
+  button.primary{background:linear-gradient(90deg,#07b59a,#22d8b0);color:#021b18;border:none}
+  button.warn{background:linear-gradient(90deg,#b84343,#e04b4b);color:white;border:none}
+  input[type="date"],textarea,input[type="text"],select{background:#061018;border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;color:#dff8f1;width:100%;outline:none}
+  textarea{min-height:84px;resize:vertical}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .compact{background:var(--glass);padding:12px;border-radius:10px}
+  .footer{display:flex;gap:8px;justify-content:space-between;margin-top:12px}
+  .tab{flex:1;padding:10px 8px;border-radius:10px;text-align:center;background:transparent;border:1px solid transparent;color:var(--muted);font-weight:700}
+  .tab.active{background:linear-gradient(90deg,#052f2f,#07323a);color:var(--accent);border:1px solid rgba(255,255,255,0.03)}
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,10,0.6), rgba(2,6,10,0.85));z-index:90;padding:18px}
+  .panel{width:100%;max-width:720px;background:linear-gradient(180deg,#071217,#061219);padding:14px;border-radius:12px;box-shadow:var(--shadow)}
+  .list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .item{background:var(--glass-2);padding:10px;border-radius:10px;display:flex;justify-content:space-between;align-items:center}
+  .muted-sm{color:var(--muted);font-size:13px}
+  .ms-row{display:flex;gap:12px;align-items:center}
+  .ms-pill{min-width:64px;padding:8px 10px;border-radius:8px;text-align:center;font-weight:800}
+  .ms-locked{background:rgba(255,255,255,0.02);color:var(--muted)}
+  .ms-unlocked{background:linear-gradient(90deg,#18c9a3,#6ef1ce);color:#021b18}
+  .trophy{display:flex;gap:10px;align-items:center}
+  .trophy .icon{width:54px;height:54px;border-radius:10px;background:linear-gradient(135deg,#2f8a66,#1bbf98);display:grid;place-items:center;font-weight:800}
+  .small{font-size:13px;padding:8px 10px}
+  .danger{color:var(--danger)}
+  .ok{color:var(--accent)}
+  .center{display:grid;place-items:center}
+  .fade-in { animation: fadeIn .45s ease both }
+  @keyframes fadeIn { from {opacity:0; transform:translateY(6px)} to {opacity:1; transform:translateY(0)} }
+  @media (max-width:640px){
+    .grid{grid-template-columns:1fr}
+    .big{font-size:36px}
+    header{flex-direction:column;align-items:flex-start;gap:8px}
   }
 </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="20" height="20" rx="5" fill="#fff" opacity="0.03"/>
+            <path d="M6 13c2-3 6-5 10-4" stroke="#79f0de" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="title">Trak Recovery</div>
+          <div class="subtitle">Real milestones • XP & Levels • Trophy Room</div>
+        </div>
+      </div>
+      <div class="mode-pill">Recovery</div>
+    </header>
 
-<header>Trak Recovery</header>
+    <main class="card" id="homeCard">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="label">Current Streak</div>
+          <div class="big" id="currentStreak">0</div>
+          <div class="muted-sm">Highest: <span id="highestStreak">0</span> • Total clean: <span id="totalClean">0</span></div>
+        </div>
 
-<!-- HOME -->
-<div id="home" class="page active-page">
-  <div class="stat">Current Streak: <span id="streak">0</span> days</div>
-  <div class="stat">Highest Streak: <span id="highStreak">0</span> days</div>
-  <div class="stat">Level: <span id="level">1</span></div>
-  <div class="stat">XP: <span id="xp">0</span> / <span id="xpGoal">100</span></div>
+        <div style="text-align:right;min-width:160px">
+          <div class="label">Level</div>
+          <div class="big" id="levelNum">1</div>
+          <div class="muted-sm">XP: <span id="xpCount">0</span> / <span id="xpGoal">0</span></div>
+        </div>
+      </div>
 
-  <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+      <div class="xp-bar" aria-label="XP progress">
+        <div class="xp-fill" id="xpFill"></div>
+      </div>
 
-  <button onclick="addDay()">Add Day</button>
-  <button onclick="resetStreak()">Log Relapse</button>
-</div>
+      <div class="controls">
+        <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px">
+          <input type="date" id="logDate" />
+          <button class="btn primary" id="btnLogClean">Log Clean Day</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;min-width:200px">
+          <input type="date" id="relapseDate"/>
+          <button class="btn warn" id="btnRelapse">Log Relapse</button>
+        </div>
+      </div>
 
-<!-- MILESTONES -->
-<div id="milestones" class="page">
-  <h3>Milestone Roadmap</h3>
-  <div id="milestoneList"></div>
-</div>
+      <div class="grid">
+        <div class="compact center">
+          <div class="muted-sm">Emergency</div>
+          <div style="height:8px"></div>
+          <button class="btn" id="btnEmergency">Open Emergency</button>
+        </div>
+        <div class="compact center">
+          <div class="muted-sm">Urge Timer</div>
+          <div style="height:8px"></div>
+          <button class="btn" id="btnUrge">Start Urge Timer</button>
+          <div class="muted-sm" style="margin-top:8px">Last: <span id="lastUrge">—</span></div>
+        </div>
+      </div>
 
-<!-- JOURNAL -->
-<div id="journal" class="page">
-  <h3>Daily Journal</h3>
-  <textarea id="journalInput" placeholder="How was your day?"></textarea><br>
-  <button onclick="saveJournal()">Save Entry</button>
-  <h4>Past Entries</h4>
-  <div id="journalLog"></div>
-</div>
+      <div class="grid">
+        <div class="compact">
+          <div class="label">Quick Journal (optional)</div>
+          <textarea id="journalText" placeholder="Write how you felt today..."></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn primary" id="btnSaveJournal">Save</button>
+            <button class="btn" id="btnViewJournals">View Journals</button>
+          </div>
+        </div>
 
-<!-- URGE TIMER -->
-<div id="urge" class="page">
-  <h3>Urge Timer</h3>
-  <div class="stat">Urge Duration: <span id="urgeTime">0</span> seconds</div>
-  <button onclick="startUrge()">Start</button>
-  <button onclick="stopUrge()">Stop</button>
-</div>
+        <div class="compact">
+          <div class="label">Stats Snapshot</div>
+          <div class="list" style="margin-top:10px">
+            <div class="item"><div>Total clean</div><div id="statTotal">0</div></div>
+            <div class="item"><div>Relapses</div><div id="statRelapses">0</div></div>
+            <div class="item"><div>Milestones</div><div id="statMilestones">0</div></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" id="btnOpenMilestones">Open Milestones</button>
+            <button class="btn" id="btnOpenStats">Open Stats</button>
+          </div>
+        </div>
+      </div>
+    </main>
 
-<!-- SETTINGS -->
-<div id="settings" class="page">
-  <h3>Settings</h3>
-  <button onclick="resetApp()" style="background-color: red;">Reset App</button>
-</div>
+    <div class="footer">
+      <button class="tab active" id="tabHome">Home</button>
+      <button class="tab" id="tabMilestones">Milestones</button>
+      <button class="tab" id="tabTrophies">Trophy Room</button>
+      <button class="tab" id="tabJournal">Journal</button>
+      <button class="tab" id="tabSettings">Settings</button>
+    </div>
+  </div>
 
-<!-- NAVIGATION -->
-<nav>
-  <button onclick="showPage('home')" class="active">Home</button>
-  <button onclick="showPage('milestones')">Milestones</button>
-  <button onclick="showPage('journal')">Journal</button>
-  <button onclick="showPage('urge')">Urge</button>
-  <button onclick="showPage('settings')">Settings</button>
-</nav>
+  <!-- Emergency Modal -->
+  <div class="modal" id="modalEmergency">
+    <div class="panel fade-in">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Emergency Mode</strong><div class="muted-sm">Tools to ride urges</div></div>
+        <div><button class="btn" id="closeEmergency">Close</button></div>
+      </div>
+      <div style="height:12px"></div>
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <div style="width:220px;height:220px;border-radius:14px;background:linear-gradient(180deg,#04141b,#032426);display:grid;place-items:center">
+          <div id="breathRing" style="width:90px;height:90px;border-radius:50%;background:linear-gradient(90deg,#38e6c6,#9ffbe9);opacity:.08;transition:transform .35s"></div>
+          <div class="muted-sm" id="breathText" style="margin-top:10px">Tap Start Breathing</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn primary" id="startBreath">Start</button>
+          <button class="btn" id="stopBreath">Stop</button>
+          <button class="btn" id="quickQuote">Quote</button>
+        </div>
+        <div class="muted-sm">Quotes: "Urges pass. Breathe. Wait 10 minutes."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Milestones Modal -->
+  <div class="modal" id="modalMilestones">
+    <div class="panel fade-in">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Milestones Roadmap</strong><div class="muted-sm">Realistic recovery stages</div></div>
+        <div><button class="btn" id="closeMilestones">Close</button></div>
+      </div>
+      <div class="list" id="milestoneList"></div>
+    </div>
+  </div>
+
+  <!-- Milestone Unlock -->
+  <div class="modal" id="modalUnlock">
+    <div class="panel center fade-in">
+      <div class="trophy">
+        <div class="icon" id="unlockIcon">★</div>
+        <div style="text-align:left">
+          <div id="unlockTitle" style="font-weight:800;font-size:18px"></div>
+          <div class="muted-sm" id="unlockDesc" style="margin-top:6px"></div>
+        </div>
+      </div>
+      <div style="height:12px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn primary" id="btnCloseUnlock">Awesome</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trophy Room Modal -->
+  <div class="modal" id="modalTrophies">
+    <div class="panel fade-in">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Trophy Room</strong><div class="muted-sm">All earned milestones</div></div>
+        <div><button class="btn" id="closeTrophies">Close</button></div>
+      </div>
+      <div class="list" id="trophyList" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- Stats / Settings Modal -->
+  <div class="modal" id="modalStats">
+    <div class="panel fade-in">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Stats & Settings</strong><div class="muted-sm">Export / Import / Reset</div></div>
+        <div><button class="btn" id="closeStats">Close</button></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="item"><div>Current streak</div><div id="statCurrent">0</div></div>
+        <div class="item"><div>Highest streak</div><div id="statHigh">0</div></div>
+        <div class="item"><div>Level</div><div id="statLevel">1</div></div>
+        <div class="item"><div>XP (current)</div><div id="statXP">0</div></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" id="btnExport">Export Data</button>
+          <button class="btn" id="btnImport">Import Data</button>
+          <input type="file" id="fileImport" accept="application/json" style="display:none" />
+          <button class="btn warn" id="btnResetAll">Reset App (full)</button>
+        </div>
+        <div style="height:12px"></div>
+        <div class="item"><div>Sound</div>
+          <div>
+            <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="soundToggle"/> Enable sounds</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <script>
-  // Recovery stats
-  let streak = parseInt(localStorage.getItem('streak')) || 0;
-  let highStreak = parseInt(localStorage.getItem('highStreak')) || 0;
-  let xp = parseInt(localStorage.getItem('xp')) || 0;
-  let xpGoal = parseInt(localStorage.getItem('xpGoal')) || 100;
-  let level = parseInt(localStorage.getItem('level')) || 1;
+/* Trak Recovery v3 — Final single-file
+   Local key: trak_v3_final
+*/
 
-  // Milestones
-  const milestones = [
-    { days: 1, title: "Commitment Made", desc: "You’ve taken the first step." },
-    { days: 7, title: "Urges Lower", desc: "Brain starting to adapt." },
-    { days: 14, title: "Energy Boost", desc: "Small surge of motivation." },
-    { days: 21, title: "Sleep Stabilizing", desc: "Better rest & recovery." },
-    { days: 30, title: "Mood Lift", desc: "Noticeable improvement in mood." },
-    { days: 60, title: "Sensitivity Returning", desc: "Small signs of physical healing." },
-    { days: 90, title: "Self Control Stronger", desc: "Resisting urges feels easier." },
-    { days: 120, title: "Urges Manageable", desc: "Little control feels like second nature." },
-    { days: 180, title: "Near Full Sensitivity", desc: "Your body is healing well." },
-    { days: 240, title: "Brain Fog Clearing", desc: "Sharper focus daily." },
-    { days: 365, title: "1 Year Milestone", desc: "Full mental reset achieved." }
-  ];
+// ---------- Storage and default state ----------
+const STORAGE_KEY = 'trak_v3_final';
+const defaultState = {
+  cleanDates: [],       // array YYYY-MM-DD
+  relapseDates: [],
+  journal: {},          // date => text
+  level: 1,
+  xp: 0,                // xp in current level
+  unlocked: [],         // milestone days unlocked
+  urgeLogs: [],         // {date, seconds}
+  highestStreak: 0,
+  trophies: []          // {day, title, date}
+};
+let state = loadState();
 
-  // Urge timer
-  let urgeStartTime = null;
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {...defaultState};
+    const parsed = JSON.parse(raw);
+    return {...defaultState, ...parsed};
+  }catch(e){ console.error(e); return {...defaultState}; }
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-  // Load data into UI
-  updateUI();
-  renderMilestones();
-  loadJournalLog();
+// ---------- Helpers ----------
+function todayKey(d=new Date()){ const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+function parseDateKey(k){ return new Date(k + 'T00:00:00'); }
+function addUnique(arr,val){ if (!arr.includes(val)) arr.push(val); arr.sort(); return arr; }
+function uniqueSorted(arr){ return Array.from(new Set(arr)).sort(); }
+function formatTime(s){ if (s<60) return `${s}s`; const m=Math.floor(s/60); const r=s%60; return `${m}m ${r}s`; }
+function playSound(id){ if (!soundEnabled()) return; const t = document.getElementById(id); if (t) t.play().catch(()=>{}); }
 
-  function updateUI() {
-    document.getElementById('streak').textContent = streak;
-    document.getElementById('highStreak').textContent = highStreak;
-    document.getElementById('xp').textContent = xp;
-    document.getElementById('xpGoal').textContent = xpGoal;
-    document.getElementById('level').textContent = level;
-    document.getElementById('xpFill').style.width = (xp / xpGoal) * 100 + '%';
+// ---------- Milestones (realistic long-term list) ----------
+const MILESTONES = [
+  {day:1,  title:"Commitment Made",           reality:"You chose action. Withdrawal may begin.", xp:12},
+  {day:3,  title:"First Resistance",          reality:"Dopamine dips and first waves hit.", xp:18},
+  {day:7,  title:"Forging Focus",             reality:"Routines start to beat urges.", xp:28},
+  {day:14, title:"Energy Rebound",            reality:"Energy and clarity improving.", xp:36},
+  {day:21, title:"Flatline Phase",            reality:"Temporary numbness; normal reset.", xp:24},
+  {day:30, title:"First Month",               reality:"Noticeable clarity and steadiness.", xp:60},
+  {day:45, title:"Temptation Weakens",        reality:"Urges shorter and manageable.", xp:80},
+  {day:60, title:"Sensitivity Returning",     reality:"Physical sensitivity begins recovery.", xp:110},
+  {day:90, title:"Kinks Resetting",           reality:"Less appeal for extreme content.", xp:160},
+  {day:120,title:"Solid Ground",              reality:"Stable motivation and mood.", xp:220},
+  {day:150,title:"Emotional Balance",         reality:"Better regulation and resilience.", xp:260},
+  {day:180,title:"Near Full Sensitivity",     reality:"Sexual sensitivity near baseline.", xp:320},
+  {day:240,title:"Brain Fog Clears",          reality:"Sharper focus and memory.", xp:420},
+  {day:300,title:"Drive Balanced",            reality:"Healthy, balanced libido.", xp:520},
+  {day:365,title:"One-Year Reset",            reality:"Deep reboot and sustained control.", xp:900}
+];
+
+// ---------- Level XP scaling (resets each level) ----------
+function xpGoal(level){
+  // smooth progressive curve — tweakable
+  return Math.round(100 * Math.pow(1.5, level-1));
+}
+
+// ---------- Streak calculations ----------
+function currentStreak(){
+  const s = new Set(state.cleanDates);
+  if (!s.size) return 0;
+  const sorted = state.cleanDates.slice().sort();
+  const latest = sorted[sorted.length-1];
+  let count=0; let cur = parseDateKey(latest);
+  while(true){
+    const key = todayKey(cur);
+    if (s.has(key)){ count++; cur = new Date(cur.getTime() - 24*60*60*1000); } else break;
   }
+  return count;
+}
+function computeHighestStreak(){
+  const s = new Set(state.cleanDates);
+  if (!s.size) return 0;
+  const sorted = state.cleanDates.slice().sort();
+  let best=0;
+  for (let i=0;i<sorted.length;i++){
+    let run=0; let cur=parseDateKey(sorted[i]);
+    while(s.has(todayKey(cur))){ run++; cur=new Date(cur.getTime()+24*60*60*1000); }
+    if (run>best) best=run; i+=run-1;
+  }
+  return best;
+}
 
-  function addDay() {
-    streak++;
-    xp += 10;
-    if (xp >= xpGoal) {
-      xp = 0;
-      level++;
-      xpGoal += 50;
-      alert("🎉 Level Up! You are now Level " + level);
-    }
-    if (streak > highStreak) highStreak = streak;
+// ---------- Actions ----------
+function logClean(dateKey){
+  dateKey = dateKey || todayKey();
+  if (!state.cleanDates.includes(dateKey)){
+    state.cleanDates = addUnique(state.cleanDates, dateKey);
+    state.xp = Math.max(0, state.xp + 10);
+    checkLevelUp();
     checkMilestones();
-    saveStats();
+    state.highestStreak = Math.max(state.highestStreak, computeHighestStreak());
+    saveState(); renderAll();
+    return true;
   }
+  return false;
+}
 
-  function resetStreak() {
-    streak = 0;
-    saveStats();
-  }
+function logRelapse(dateKey){
+  dateKey = dateKey || todayKey();
+  if (!state.relapseDates.includes(dateKey)) state.relapseDates = addUnique(state.relapseDates, dateKey);
+  state.cleanDates = state.cleanDates.filter(d => d < dateKey);
+  state.xp = Math.max(0, state.xp - 20);
+  saveState(); renderAll();
+}
 
-  function saveStats() {
-    localStorage.setItem('streak', streak);
-    localStorage.setItem('highStreak', highStreak);
-    localStorage.setItem('xp', xp);
-    localStorage.setItem('xpGoal', xpGoal);
-    localStorage.setItem('level', level);
-    updateUI();
-  }
+function saveJournal(dateKey, text){
+  if (!text || !text.trim()) delete state.journal[dateKey];
+  else state.journal[dateKey] = text.trim();
+  saveState(); renderAll();
+}
 
-  function checkMilestones() {
-    milestones.forEach(m => {
-      if (streak === m.days) {
-        alert(`🏆 Milestone reached: ${m.title}\n${m.desc}`);
-      }
-    });
-    renderMilestones();
-  }
+function saveUrge(seconds){
+  state.urgeLogs.push({date: todayKey(), seconds});
+  saveState(); renderAll();
+}
 
-  function renderMilestones() {
-    const list = document.getElementById('milestoneList');
-    list.innerHTML = '';
-    milestones.forEach(m => {
-      const div = document.createElement('div');
-      div.className = 'milestone' + (streak >= m.days ? ' reached' : '');
-      div.innerHTML = `<strong>Day ${m.days}:</strong> ${m.title}<br><small>${m.desc}</small>`;
-      list.appendChild(div);
-    });
+// ---------- Leveling ----------
+function checkLevelUp(){
+  let goal = xpGoal(state.level);
+  while (state.xp >= goal){
+    state.xp -= goal;
+    state.level++;
+    playUnlockSound();
+    showUnlock(`Level Up — Level ${state.level}`, `New XP goal: ${xpGoal(state.level)}`);
+    goal = xpGoal(state.level);
   }
+  saveState();
+}
 
-  // Journal
-  function saveJournal() {
-    let text = document.getElementById('journalInput').value;
-    let date = new Date().toLocaleDateString();
-    localStorage.setItem('journal-' + date, text);
-    document.getElementById('journalInput').value = '';
-    loadJournalLog();
-  }
-
-  function loadJournalLog() {
-    const log = document.getElementById('journalLog');
-    log.innerHTML = '';
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('journal-')) {
-        const entry = document.createElement('div');
-        entry.style.borderBottom = '1px solid #333';
-        entry.style.padding = '5px 0';
-        entry.innerHTML = `<strong>${key.replace('journal-', '')}</strong>: ${localStorage.getItem(key)}`;
-        log.appendChild(entry);
-      }
-    });
-  }
-
-  // Urge Timer
-  function startUrge() {
-    urgeStartTime = Date.now();
-  }
-  function stopUrge() {
-    if (urgeStartTime) {
-      let duration = Math.floor((Date.now() - urgeStartTime) / 1000);
-      document.getElementById('urgeTime').textContent = duration;
-      alert("You survived an urge for " + duration + " seconds!");
-      urgeStartTime = null;
+// ---------- Milestones ----------
+function checkMilestones(){
+  const s = currentStreak();
+  MILESTONES.forEach(ms=>{
+    if (s >= ms.day && !state.unlocked.includes(ms.day)){
+      state.unlocked = addUnique(state.unlocked, ms.day);
+      state.xp = Math.max(0, state.xp + ms.xp);
+      // add trophy
+      state.trophies.push({day:ms.day, title:ms.title, date: todayKey()});
+      showUnlock(`Milestone — ${ms.title}`, ms.reality + `\n(+${ms.xp} XP)`);
+      playUnlockSound();
+      checkLevelUp();
     }
-  }
+  });
+  saveState();
+}
 
-  // Reset App
-  function resetApp() {
-    if (confirm("Are you sure you want to reset everything?")) {
-      localStorage.clear();
-      streak = 0;
-      highStreak = 0;
-      xp = 0;
-      xpGoal = 100;
-      level = 1;
-      updateUI();
-      renderMilestones();
-      loadJournalLog();
-    }
-  }
+// ---------- UI rendering ----------
+function $(sel){ return document.querySelector(sel); }
+function $all(sel){ return Array.from(document.querySelectorAll(sel)); }
 
-  // Navigation
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-    document.getElementById(id).classList.add('active-page');
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.querySelector(`nav button[onclick="showPage('${id}')"]`).classList.add('active');
-  }
+function renderAll(){
+  const streak = currentStreak();
+  $('#currentStreak').textContent = streak;
+  $('#highestStreak').textContent = state.highestStreak || computeHighestStreak();
+  $('#totalClean').textContent = state.cleanDates.length;
+  $('#levelNum').textContent = state.level;
+  const goal = xpGoal(state.level);
+  $('#xpCount').textContent = state.xp;
+  $('#xpGoal').textContent = goal;
+  const pct = Math.min(100, Math.round(state.xp / goal * 100));
+  $('#xpFill').style.width = pct + '%';
+  $('#statTotal').textContent = state.cleanDates.length;
+  $('#statRelapses').textContent = state.relapseDates.length;
+  $('#statMilestones').textContent = state.unlocked.length;
+  $('#lastUrge').textContent = state.urgeLogs.length ? formatTime(state.urgeLogs[state.urgeLogs.length-1].seconds) : '—';
+  renderMilestoneList();
+  renderTrophies();
+  renderJournalsList();
+  renderStatsList();
+  saveState();
+}
+
+function renderMilestoneList(){
+  const container = $('#milestoneList'); container.innerHTML = '';
+  const s = currentStreak();
+  MILESTONES.forEach(ms=>{
+    const unlocked = state.unlocked.includes(ms.day);
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `<div style="display:flex;gap:12px;align-items:center">
+      <div class="ms-pill ${unlocked? 'ms-unlocked':'ms-locked'}">${ms.day}d</div>
+      <div style="flex:1"><strong>${ms.title}</strong><div class="muted-sm">${ms.reality}</div></div>
+    </div>
+    <div style="min-width:120px;text-align:right" class="muted-sm">${unlocked? 'Unlocked' : (s>=ms.day? 'Ready' : `Need ${ms.day - s}d`)}</div>`;
+    container.appendChild(el);
+  });
+}
+
+function renderTrophies(){
+  const container = $('#trophyList'); container.innerHTML = '';
+  if (!state.trophies.length) container.innerHTML = '<div class="item">No trophies yet.</div>';
+  state.trophies.slice().reverse().forEach(t=>{
+    const el = document.createElement('div'); el.className='item';
+    el.innerHTML = `<div style="display:flex;gap:10px;align-items:center"><div style="width:46px;height:46px;border-radius:8px;background:linear-gradient(90deg,#18c9a3,#6ef1ce);display:grid;place-items:center;font-weight:800">${t.day}d</div>
+      <div style="flex:1"><strong>${t.title}</strong><div class="muted-sm">Unlocked: ${t.date}</div></div></div>`;
+    container.appendChild(el);
+  });
+}
+
+function renderJournalsList(){
+  const container = $('#journalList'); if(!container) return;
+  container.innerHTML = '';
+  const keys = Object.keys(state.journal).sort((a,b)=> b.localeCompare(a));
+  if (!keys.length) container.innerHTML = '<div class="item">No journal entries yet.</div>';
+  keys.forEach(k=>{
+    const el = document.createElement('div'); el.className='item';
+    const short = state.journal[k].length>120? state.journal[k].slice(0,120)+'…': state.journal[k];
+    el.innerHTML = `<div style="text-align:left"><strong>${k}</strong><div class="muted-sm">${short}</div></div><div><button class="btn" data-date="${k}">Edit</button></div>`;
+    container.appendChild(el);
+  });
+  $all('#journalList button').forEach(b=> b.addEventListener('click', e=>{
+    const d = e.target.dataset.date;
+    const val = prompt(`Edit diary for ${d}`, state.journal[d]||'');
+    if (val === null) return; saveJournal(d, val);
+  }));
+}
+
+function renderStatsList(){
+  $('#statCurrent').textContent = currentStreak();
+  $('#statHigh').textContent = state.highestStreak || computeHighestStreak();
+  $('#statLevel').textContent = state.level;
+  $('#statXP').textContent = state.xp;
+}
+
+// ---------- Modals ----------
+function openModal(id){ $(id).style.display = 'flex'; }
+function closeModal(id){ $(id).style.display = 'none'; }
+
+// ---------- Unlock popup ----------
+function showUnlock(title, desc){
+  $('#unlockTitle').textContent = title;
+  $('#unlockDesc').textContent = desc;
+  openModal('#modalUnlock');
+}
+
+// ---------- Urge timer ----------
+let urgeTimer = null, urgeStart = null;
+function startUrge(){
+  if (urgeTimer) return;
+  urgeStart = Date.now();
+  $('#btnUrge').textContent = 'Stop Urge Timer';
+  urgeTimer = setInterval(()=>{
+    const s = Math.floor((Date.now()-urgeStart)/1000);
+    $('#btnUrge').textContent = `Stop Urge — ${formatTime(s)}`;
+  },500);
+}
+function stopUrge(){
+  if (!urgeTimer) return;
+  const seconds = Math.round((Date.now()-urgeStart)/1000);
+  clearInterval(urgeTimer); urgeTimer=null; urgeStart=null;
+  $('#btnUrge').textContent = 'Start Urge Timer';
+  saveUrge(seconds);
+  alert(`Urge recorded: ${formatTime(seconds)} — great job holding on.`);
+}
+
+// ---------- Breathing ----------
+let breathInterval = null;
+function startBreathing(){
+  if (breathInterval) return;
+  let phase=0, sec=4;
+  $('#breathText').textContent = `Inhale • ${sec}`;
+  $('#breathRing').style.transform = 'scale(.85)';
+  breathInterval = setInterval(()=>{
+    sec--;
+    if (sec<=0){ phase=(phase+1)%4; sec=4; if (phase===0){ $('#breathRing').style.transform='scale(1.15)'; $('#breathText').textContent='Inhale • 4'; }
+      if (phase===1){ $('#breathRing').style.transform='scale(1.05)'; $('#breathText').textContent='Hold • 4'; }
+      if (phase===2){ $('#breathRing').style.transform='scale(.8)'; $('#breathText').textContent='Exhale • 4'; }
+      if (phase===3){ $('#breathRing').style.transform='scale(.95)'; $('#breathText').textContent='Hold • 4'; }
+    } else { const phases=['Inhale','Hold','Exhale','Hold']; $('#breathText').textContent = `${phases[phase]} • ${sec}`; }
+  },1000);
+}
+function stopBreathing(){ if (breathInterval) clearInterval(breathInterval); breathInterval=null; $('#breathRing').style.transform='scale(1)'; $('#breathText').textContent='Breathing stopped'; }
+
+// ---------- Export / Import / Reset ----------
+function exportData(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='trak_backup.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  alert('Exported data to file.');
+}
+function importData(file){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if (!confirm('This will overwrite local app data. Continue?')) return;
+      state = {...defaultState, ...parsed};
+      saveState(); renderAll(); alert('Import complete.');
+    }catch(err){ alert('Import failed: '+err.message); }
+  };
+  reader.readAsText(file);
+}
+function resetAll(){
+  if (!confirm('Erase ALL app data on this device?')) return;
+  localStorage.removeItem(STORAGE_KEY); state = loadState(); renderAll(); alert('App reset.');
+}
+function resetKeepTrophies(){
+  if (!confirm('Reset streak and XP but KEEP trophies?')) return;
+  const kept = state.trophies.slice();
+  state = {...defaultState, trophies: kept};
+  saveState(); renderAll(); alert('Reset complete (trophies kept).');
+}
+
+// ---------- Sound & assets ----------
+const AUDIO_UNLOCK = new Audio('data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...'); // placeholder short beep (dataURL trimmed)
+function soundEnabled(){ return JSON.parse(localStorage.getItem('trak_sound_enabled') || 'true'); }
+function setSoundEnabled(v){ localStorage.setItem('trak_sound_enabled', JSON.stringify(!!v)); $('#soundToggle').checked = !!v; }
+function playUnlockSound(){ if (!soundEnabled()) return; try{ /* small UI feedback sound */ navigator && navigator.vibrate && navigator.vibrate(40); }catch(e){} }
+
+// ---------- UI wiring & listeners ----------
+function setDefaultDates(){ const d = todayKey(); $('#logDate').value = d; $('#relapseDate').value = d; }
+function setup(){
+  // default sound
+  if (localStorage.getItem('trak_sound_enabled')===null) setSoundEnabled(true);
+  $('#soundToggle').checked = soundEnabled();
+
+  $('#btnLogClean').addEventListener('click', ()=> {
+    const d = $('#logDate').value || todayKey();
+    const ok = logClean(d);
+    if (ok) { alert('Clean day logged ✓'); } else { alert('This day already logged.'); }
+  });
+  $('#btnRelapse').addEventListener('click', ()=> {
+    const d = $('#relapseDate').value || todayKey();
+    if (!confirm('Log relapse on '+d+'? This will remove any clean days on/after that date.')) return;
+    logRelapse(d); alert('Relapse logged. Get back on it today.');
+  });
+
+  $('#btnEmergency').addEventListener('click', ()=> openModal('#modalEmergency'));
+  $('#closeEmergency').addEventListener('click', ()=> { stopBreathing(); closeModal('#modalEmergency'); });
+  $('#startBreath').addEventListener('click', startBreathing);
+  $('#stopBreath').addEventListener('click', stopBreathing);
+  $('#quickQuote').addEventListener('click', ()=> alert(['Urges pass — breathe and wait.','This too shall pass.','Your future self thanks you.'][Math.floor(Math.random()*3)]));
+
+  $('#btnUrge').addEventListener('click', ()=> { if (!urgeTimer) startUrge(); else stopUrge(); });
+
+  $('#btnSaveJournal').addEventListener('click', ()=> {
+    const txt = $('#journalText').value || '';
+    const d = $('#logDate').value || todayKey();
+    saveJournal(d, txt); alert('Journal saved for '+d);
+  });
+  $('#btnViewJournals').addEventListener('click', ()=> openJournalModal());
+  $('#btnOpenMilestones').addEventListener('click', ()=> openModal('#modalMilestones'));
+  $('#closeMilestones').addEventListener('click', ()=> closeModal('#modalMilestones'));
+  $('#btnOpenStats').addEventListener('click', ()=> openModal('#modalStats'));
+  $('#closeStats').addEventListener('click', ()=> closeModal('#modalStats'));
+  $('#btnExport').addEventListener('click', exportData);
+  $('#btnImport').addEventListener('click', ()=> $('#fileImport').click());
+  $('#fileImport').addEventListener('change', e=> { if (e.target.files && e.target.files[0]) importData(e.target.files[0]); });
+  $('#btnResetAll').addEventListener('click', resetAll);
+  $('#btnResetAll').addEventListener('dblclick', resetAll); // double safe
+  $('#btnResetAll').addEventListener('contextmenu', e=> { e.preventDefault(); resetAll(); });
+
+  $('#tabHome').addEventListener('click', ()=> activateTab('home'));
+  $('#tabMilestones').addEventListener('click', ()=> { activateTab('milestones'); openModal('#modalMilestones'); });
+  $('#tabTrophies').addEventListener('click', ()=> { activateTab('trophies'); openModal('#modalTrophies'); });
+  $('#tabJournal').addEventListener('click', ()=> { activateTab('journal'); openJournalModal(); });
+  $('#tabSettings').addEventListener('click', ()=> { activateTab('settings'); openModal('#modalStats'); });
+
+  $('#closeUnlock').addEventListener('click', ()=> closeModal('#modalUnlock'));
+  $('#closeTrophies').addEventListener('click', ()=> closeModal('#modalTrophies'));
+  $('#btnCloseUnlock').addEventListener('click', ()=> closeModal('#modalUnlock'));
+
+  $('#btnExport').addEventListener('click', exportData);
+  $('#btnImport').addEventListener('click', ()=> $('#fileImport').click());
+  $('#fileImport').addEventListener('change', e => { if (e.target.files && e.target.files[0]) importData(e.target.files[0]); });
+  $('#btnResetAll').addEventListener('click', resetAll);
+
+  $('#soundToggle').addEventListener('change', e=> setSoundEnabled(e.target.checked));
+
+  setDefaultDates();
+  checkMilestones(); renderAll();
+}
+
+function openJournalModal(){ renderJournalsList(); openModal('#modalTrophies'); /* reuse trophy modal to show journals? Instead open journal modal if present */ openModal('#modalJournals'); }
+function activateTab(name){
+  $all('.tab').forEach(t=>t.classList.remove('active'));
+  if (name==='home') $('#tabHome').classList.add('active');
+  if (name==='milestones') $('#tabMilestones').classList.add('active');
+  if (name==='trophies') $('#tabTrophies').classList.add('active');
+  if (name==='journal') $('#tabJournal').classList.add('active');
+  if (name==='settings') $('#tabSettings').classList.add('active');
+}
+
+// ---------- Init ----------
+setup();
+
+// small accessibility bindings for global $
+function $(s){ return document.querySelector(s); }
+function $all(s){ return Array.from(document.querySelectorAll(s)); }
+
 </script>
-
 </body>
 </html>
