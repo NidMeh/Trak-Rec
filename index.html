@@ -1,724 +1,166 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Trak Recovery</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0b0f13;
-      --card:#0f1418;
-      --muted:#9aa6b2;
-      --accent:#5eead4;
-      --danger:#ff6b6b;
-      --glass: rgba(255,255,255,0.03);
-      --success:#7ee787;
-      --glass-2: rgba(255,255,255,0.02);
-      --shadow: 0 6px 20px rgba(2,6,10,0.6);
-      font-family: 'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; background:linear-gradient(180deg,var(--bg),#071018 120%);
-      color:#e6eef3; min-height:100vh; display:flex; align-items:flex-start; justify-content:center;
-      padding:18px;
-    }
-    .app {
-      width:100%; max-width:720px; background:transparent;
-      display:flex; flex-direction:column; gap:12px;
-    }
-    header{display:flex;align-items:center;justify-content:space-between;padding:8px 6px}
-    .brand{display:flex;align-items:center;gap:10px}
-    .logo{width:44px;height:44px;background:linear-gradient(135deg,#17212a,#0a3b3a);border-radius:10px;display:grid;place-items:center;box-shadow:var(--shadow)}
-    .logo svg{width:28px;height:28px;opacity:0.95}
-    h1{font-size:18px;margin:0;font-weight:600}
-    .mode-pill{padding:8px 12px;background:var(--glass);border-radius:999px;color:var(--muted);font-size:13px}
-    main.card{background:linear-gradient(180deg,var(--card),rgba(12,18,22,0.9));border-radius:14px;padding:16px;box-shadow:var(--shadow)}
-    .row{display:flex;gap:12px;align-items:center}
-    .big-streak{font-size:48px;font-weight:700;letter-spacing:1px}
-    .sub{color:var(--muted);font-size:13px}
-    .xp-bar{height:14px;background:var(--glass-2);border-radius:999px;overflow:hidden;margin-top:8px}
-    .xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),#6ee7b7);width:0}
-    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    button.btn{background:linear-gradient(90deg,#11161a,#0b1316);border:1px solid rgba(255,255,255,0.03);padding:10px 12px;border-radius:10px;color:#eaf6f1;font-weight:600;cursor:pointer}
-    button.primary{background:linear-gradient(90deg,#0f9c8b,#1fb3a8);color:#021617}
-    button.warn{background:linear-gradient(90deg,#3b0b0b,#8b2a2a);color:white}
-    .small{font-size:13px;padding:8px 10px}
-    .muted{color:var(--muted)}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-    .card-compact{background:var(--glass);padding:12px;border-radius:10px}
-    .footer-nav{display:flex;gap:8px;justify-content:space-between;margin-top:12px}
-    .tab{flex:1;padding:10px 8px;border-radius:10px;text-align:center;background:transparent;border:1px solid transparent;color:var(--muted);font-weight:600}
-    .tab.active{background:linear-gradient(90deg,#0f3b3a, #072b2a);color:var(--accent);border:1px solid rgba(255,255,255,0.03)}
-    .modal{position:fixed;inset:0;display:none;background:linear-gradient(180deg, rgba(2,6,10,0.7), rgba(2,6,10,0.85));align-items:center;justify-content:center;z-index:60;padding:18px}
-    .modal .content{max-width:720px;background:linear-gradient(180deg,#0b1215,#081214);padding:18px;border-radius:14px;box-shadow:var(--shadow)}
-    .close-x{position:absolute;right:18px;top:12px;opacity:0.7}
-    input[type="date"], textarea, input[type="text"], select{background:#061014;border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;color:#d7eef4;width:100%;outline:none}
-    textarea{min-height:90px;resize:vertical}
-    .milestone-card{display:flex;gap:12px;align-items:center}
-    .milestone-visual{width:84px;height:84px;border-radius:12px;background:linear-gradient(135deg,#0b2b2b,#12323e);display:grid;place-items:center;font-weight:700}
-    .milestone-txt h2{margin:0;font-size:18px}
-    .list{margin-top:8px;display:flex;flex-direction:column;gap:8px}
-    .list .item{background:var(--glass);padding:10px;border-radius:10px}
-    .danger{color:var(--danger)}
-    .muted-sm{color:var(--muted);font-size:13px}
-    .center{display:grid;place-items:center}
-    .big-number{font-size:28px;font-weight:700}
-    /* breathing animation */
-    .breath-box{width:220px;height:220px;border-radius:16px;background:linear-gradient(180deg,#07151a,#052226);display:grid;place-items:center;position:relative;overflow:hidden}
-    .breath-ring{width:70px;height:70px;border-radius:50%;background:linear-gradient(90deg,#55ffd0,#2ad6c2, #5ef0c4);opacity:0.12;transition:all 0.35s ease}
-    .breath-count{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:var(--muted)}
-    /* responsive */
-    @media (max-width:480px){
-      .grid{grid-template-columns:1fr; }
-      .big-streak{font-size:42px}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trak Recovery</title>
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0d0d0d;
+    color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+  header {
+    padding: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+    background-color: #111;
+    border-bottom: 1px solid #222;
+  }
+  .stat {
+    margin: 15px 0;
+    font-size: 1.2em;
+  }
+  button {
+    padding: 12px 18px;
+    margin: 8px;
+    background-color: #1f1f1f;
+    border: none;
+    color: white;
+    font-size: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background-color: #333;
+  }
+  .xp-bar {
+    width: 80%;
+    background-color: #222;
+    border-radius: 10px;
+    margin: 10px auto;
+    height: 20px;
+    overflow: hidden;
+  }
+  .xp-fill {
+    height: 100%;
+    background-color: #4cafef;
+    width: 0%;
+    transition: width 0.4s;
+  }
+  textarea {
+    width: 80%;
+    padding: 8px;
+    margin: 10px 0;
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 5px;
+  }
+</style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo" title="Trak">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="4" fill="#fff" opacity="0.06"/><path d="M7 13c1.5-2 3.5-3.5 5-4 2.2-.8 4 0 5 1" stroke="#5eead4" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div>
-          <h1>Trak Recovery</h1>
-          <div class="sub muted">Streaks • XP • Journal</div>
-        </div>
-      </div>
-      <div class="mode-pill">Recovery</div>
-    </header>
 
-    <main class="card" id="homeView">
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <div class="sub muted">Current Streak</div>
-          <div class="big-streak" id="streakNum">0</div>
-          <div class="sub muted">highest: <span id="highestStreak">0</span>  •  total clean days: <span id="totalClean">0</span></div>
-        </div>
-        <div style="min-width:160px;text-align:right">
-          <div class="sub muted">Level</div>
-          <div class="big-number" id="levelNum">1</div>
-          <div class="sub muted" id="xpText">XP: 0</div>
-        </div>
-      </div>
+<header>Trak Recovery</header>
 
-      <div class="xp-bar" role="progressbar" aria-label="XP progress">
-        <div class="xp-fill" id="xpFill"></div>
-      </div>
+<div class="stat">Current Streak: <span id="streak">0</span> days</div>
+<div class="stat">Highest Streak: <span id="highStreak">0</span> days</div>
+<div class="stat">XP: <span id="xp">0</span> / <span id="xpGoal">100</span></div>
 
-      <div class="controls">
-        <div style="display:flex;gap:8px;align-items:center">
-          <input type="date" id="cleanDateInput" style="background:#061014;border-radius:8px;padding:8px;color:#d7eef4" />
-          <button class="btn primary small" id="logCleanBtn">Log Clean Day</button>
-        </div>
+<div class="xp-bar">
+  <div class="xp-fill" id="xpFill"></div>
+</div>
 
-        <div style="display:flex;gap:8px;align-items:center">
-          <input type="date" id="relapseDateInput" />
-          <button class="btn warn small" id="logRelapseBtn">Log Relapse</button>
-        </div>
-      </div>
+<div>
+  <button onclick="addDay()">Add Day</button>
+  <button onclick="resetStreak()">Log Relapse</button>
+</div>
 
-      <div class="grid">
-        <div class="card-compact center">
-          <div class="sub muted">Emergency</div>
-          <div style="height:10px"></div>
-          <button class="btn" id="emergencyBtn" style="width:100%">Open Emergency</button>
-        </div>
-        <div class="card-compact center">
-          <div class="sub muted">Urge Timer</div>
-          <div style="height:10px"></div>
-          <button class="btn" id="urgeBtn" style="width:100%">Start Urge Timer</button>
-        </div>
-      </div>
+<hr style="margin: 20px 0; border: 0; border-top: 1px solid #333;">
 
-      <div class="grid">
-        <div class="card-compact">
-          <div class="sub muted">Quick Journal</div>
-          <textarea id="journalTxt" placeholder="Write how you felt today (optional)"></textarea>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn primary" id="saveJournalBtn">Save Journal</button>
-            <button class="btn" id="viewJournalsBtn">View Journals</button>
-          </div>
-        </div>
+<h3>Journal</h3>
+<textarea id="journalInput" placeholder="How was your day?"></textarea>
+<br>
+<button onclick="saveJournal()">Save Journal</button>
 
-        <div class="card-compact">
-          <div class="sub muted">Stats</div>
-          <div class="list" id="miniStats">
-            <div class="item">Total clean days: <span id="totalClean2">0</span></div>
-            <div class="item">Relapses: <span id="relapseCount">0</span></div>
-            <div class="item">XP: <span id="xpCount">0</span></div>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn" id="openStatsBtn">Open Stats</button>
-            <button class="btn" id="exportBtn">Export Data</button>
-          </div>
-        </div>
-      </div>
-    </main>
+<hr style="margin: 20px 0; border: 0; border-top: 1px solid #333;">
 
-    <div class="footer-nav">
-      <button class="tab active" id="tabHome">Home</button>
-      <button class="tab" id="tabJournal">Journal</button>
-      <button class="tab" id="tabStats">Stats</button>
-      <button class="tab" id="tabSettings">Settings</button>
-    </div>
-  </div>
-
-  <!-- Modal: Emergency -->
-  <div class="modal" id="modalEmergency">
-    <div class="content">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><h2 style="margin:0">Emergency Mode</h2><div class="sub muted">Quick tools for urges</div></div>
-        <button class="btn" id="closeEmergency">Close</button>
-      </div>
-      <div style="height:12px"></div>
-      <div style="display:flex;gap:12px;flex-direction:column;align-items:center">
-        <div class="breath-box">
-          <div class="breath-ring" id="breathRing"></div>
-          <div class="breath-count" id="breathText">Tap "Start Breathing"</div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:6px">
-          <button class="btn primary" id="startBreathBtn">Start Breathing</button>
-          <button class="btn" id="stopBreathBtn">Stop</button>
-        </div>
-        <div style="height:8px"></div>
-        <div style="width:100%;display:flex;flex-direction:column;gap:6px">
-          <div class="item">“Urges pass — breathe, delay, decide.”</div>
-          <div class="item">“This is temporary. You are building long-term strength.”</div>
-          <div class="item">“One hour from now you’ll be glad you held on.”</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Milestone -->
-  <div class="modal" id="modalMilestone">
-    <div class="content">
-      <div class="milestone-card">
-        <div class="milestone-visual" id="milestoneVisual">★</div>
-        <div class="milestone-txt">
-          <h2 id="milestoneTitle">Milestone</h2>
-          <div class="sub muted" id="milestoneDesc">You reached a milestone</div>
-          <div style="height:10px"></div>
-          <div class="muted-sm" id="milestoneReality"></div>
-          <div style="height:8px"></div>
-          <button class="btn primary" id="closeMilestone">Nice</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Stats -->
-  <div class="modal" id="modalStats">
-    <div class="content">
-      <h2 style="margin:0">Stats</h2>
-      <div class="sub muted" style="margin-bottom:12px">Your progress at a glance</div>
-      <div class="list" id="statsList"></div>
-      <div style="height:8px"></div>
-      <div style="display:flex;gap:8px">
-        <button class="btn" id="closeStats">Close</button>
-        <button class="btn warn" id="clearDataBtn">Reset All Data</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Journals -->
-  <div class="modal" id="modalJournals">
-    <div class="content">
-      <h2 style="margin:0">Journal Log</h2>
-      <div class="sub muted" style="margin-bottom:12px">Tap an entry to edit</div>
-      <div class="list" id="journalList"></div>
-      <div style="height:8px"></div>
-      <div style="display:flex;gap:8px">
-        <button class="btn" id="closeJournals">Close</button>
-      </div>
-    </div>
-  </div>
+<h3>Urge Timer</h3>
+<div class="stat">Urge Duration: <span id="urgeTime">0</span> seconds</div>
+<button onclick="startUrge()">Start</button>
+<button onclick="stopUrge()">Stop</button>
 
 <script>
-/* ---------------------------
-   Trak Recovery — single-file app
-   Saves everything in localStorage under 'trak_data'
-   --------------------------- */
+  let streak = parseInt(localStorage.getItem('streak')) || 0;
+  let highStreak = parseInt(localStorage.getItem('highStreak')) || 0;
+  let xp = parseInt(localStorage.getItem('xp')) || 0;
+  let xpGoal = 100;
+  let urgeStartTime = null;
 
-const STORAGE_KEY = 'trak_data_v1';
+  document.getElementById('streak').textContent = streak;
+  document.getElementById('highStreak').textContent = highStreak;
+  document.getElementById('xp').textContent = xp;
+  document.getElementById('xpGoal').textContent = xpGoal;
+  updateXPBar();
 
-// Helper: today's date key YYYY-MM-DD
-function todayKey(d=new Date()){
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
-}
-function parseKeyToDate(k){ return new Date(k + 'T00:00:00'); }
-function daysBetween(a,b){ return Math.round((b - a)/(1000*60*60*24)); }
-
-// Default data
-const defaultData = {
-  cleanDates: [],        // array of YYYY-MM-DD strings (unique)
-  relapseDates: [],      // array of relapse date strings
-  journal: {},           // map date => text
-  xp: 0,
-  unlockedMilestones: [],// milestone day numbers unlocked
-  urgeLogs: [],          // {date, seconds}
-  highestStreak: 0
-};
-
-// hybrid milestones (realistic + game)
-const MILESTONES = [
-  {day:1, title:"The First Step", reality:"You chose the fight. Initial withdrawal may begin.", xpBonus:10},
-  {day:3, title:"Breaking the Pattern", reality:"Dopamine drops and brain fog can appear; you're adapting.", xpBonus:20},
-  {day:7, title:"Forging Focus", reality:"First strong wave of urges—focus and routines help you pass it.", xpBonus:30},
-  {day:10, title:"Steadying the Mind", reality:"Mood swings but clearer pockets of focus begin.", xpBonus:20},
-  {day:14, title:"Regaining Control", reality:"Noticeable uptick in confidence and clarity.", xpBonus:40},
-  {day:21, title:"The Flatline", reality:"Libido may feel numb — this is normal (brain resetting).", xpBonus:20},
-  {day:30, title:"Body Awakens", reality:"Energy stabilizes, sensitivity begins returning.", xpBonus:60},
-  {day:45, title:"Temptation Weakens", reality:"Urges are easier to manage and shorter.", xpBonus:80},
-  {day:60, title:"Real Attraction Returns", reality:"Real-life people feel more appealing than pixels.", xpBonus:100},
-  {day:90, title:"Rewired", reality:"Significant reboot — thoughts about porn become distant.", xpBonus:150},
-  {day:120, title:"Solid Ground", reality:"Stronger willpower and emotional steadiness.", xpBonus:200},
-  {day:150, title:"Deep Healing", reality:"Sensitivity near-normal; consistent morning wood for many.", xpBonus:250},
-  {day:180, title:"True Baseline", reality:"Reward system largely reset; urges are short-lived.", xpBonus:300},
-  {day:365, title:"Self-Mastery", reality:"Long-term freedom and regained sexual health.", xpBonus:500}
-];
-
-// Level thresholds by XP
-const LEVEL_THRESHOLDS = [0,30,80,160,300,500,800,1200,1800,2500];
-
-// load/save
-function loadData(){
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return {...defaultData};
-    const parsed = JSON.parse(raw);
-    return {...defaultData, ...parsed};
-  } catch(e){
-    console.error('load error',e);
-    return {...defaultData};
-  }
-}
-function saveData(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-/* ---------- application state ---------- */
-let state = loadData();
-
-/* ---------- utility functions ---------- */
-
-function uniqueSorted(arr){
-  return Array.from(new Set(arr)).sort();
-}
-
-// calculate current consecutive streak based on cleanDates (consecutive ending latest date)
-function computeCurrentStreak(){
-  const s = new Set(state.cleanDates);
-  if (s.size === 0) return 0;
-  // find latest date in cleanDates
-  const sorted = state.cleanDates.slice().sort();
-  const latest = sorted[sorted.length - 1];
-  let count = 0;
-  let cur = parseKeyToDate(latest);
-  // count backwards while each previous day exists
-  while(true){
-    const key = todayKey(cur);
-    if (s.has(key)){
-      count++;
-      // move back one day
-      cur = new Date(cur.getTime() - 24*60*60*1000);
-    } else break;
-  }
-  return count;
-}
-
-function computeHighestStreak(){
-  // we can compute longest consecutive block across all cleanDates (not necessary but useful)
-  const s = new Set(state.cleanDates);
-  if (s.size === 0) return 0;
-  const sorted = state.cleanDates.slice().sort();
-  let best = 0;
-  // evaluate runs
-  for (let i=0;i<sorted.length;i++){
-    let run = 0;
-    let cur = parseKeyToDate(sorted[i]);
-    while(s.has(todayKey(cur))){
-      run++;
-      cur = new Date(cur.getTime() + 24*60*60*1000);
+  function addDay() {
+    streak++;
+    xp += 10;
+    if (xp >= xpGoal) {
+      xp -= xpGoal;
+      xpGoal += 50;
+      alert("🎉 Level Up!");
     }
-    if (run > best) best = run;
-    // skip ahead by run
-    i += run - 1;
-  }
-  return best;
-}
-
-function getLevelFromXP(xp){
-  let lvl = 1;
-  for (let i=0;i<LEVEL_THRESHOLDS.length;i++){
-    if (xp >= LEVEL_THRESHOLDS[i]) lvl = i+1;
-    else break;
-  }
-  return lvl;
-}
-function getXPProgress(xp){
-  const lvl = getLevelFromXP(xp);
-  const idx = Math.max(0, lvl-1);
-  const curThresh = LEVEL_THRESHOLDS[idx] || 0;
-  const nextThresh = LEVEL_THRESHOLDS[idx+1] || (curThresh + 500);
-  const percent = Math.min(100, Math.floor((xp - curThresh)/(nextThresh - curThresh)*100));
-  return {lvl, percent, curThresh, nextThresh};
-}
-
-/* ---------- actions ---------- */
-
-// add clean date (YYYY-MM-DD)
-function addCleanDate(dateKey){
-  dateKey = dateKey || todayKey();
-  if (!state.cleanDates.includes(dateKey)){
-    state.cleanDates.push(dateKey);
-    state.cleanDates = uniqueSorted(state.cleanDates);
-    // award XP
-    state.xp = Math.max(0, state.xp + 10);
-    checkMilestones();
-    updateHighest();
-    saveData();
-    renderAll();
-    return true;
-  }
-  return false;
-}
-
-// remove all cleanDates >= dateKey (used on relapse)
-function removeCleanDatesOnOrAfter(dateKey){
-  state.cleanDates = state.cleanDates.filter(d => d < dateKey);
-}
-
-// log relapse
-function logRelapse(dateKey){
-  dateKey = dateKey || todayKey();
-  state.relapseDates.push(dateKey);
-  state.relapseDates = uniqueSorted(state.relapseDates);
-  // remove clean days after relapse
-  removeCleanDatesOnOrAfter(dateKey);
-  // lose XP
-  state.xp = Math.max(0, state.xp - 20);
-  saveData();
-  renderAll();
-}
-
-// save journal for a given date
-function saveJournal(dateKey, text){
-  if (!text || !text.trim()) {
-    delete state.journal[dateKey];
-  } else {
-    state.journal[dateKey] = text.trim();
-  }
-  saveData();
-  renderAll();
-}
-
-// save urge log (seconds)
-function saveUrge(seconds){
-  state.urgeLogs.push({date: todayKey(), seconds});
-  saveData();
-  renderAll();
-}
-
-// check and unlock milestones for current streak
-function checkMilestones(){
-  const currentStreak = computeCurrentStreak();
-  MILESTONES.forEach(ms => {
-    if (currentStreak >= ms.day && !state.unlockedMilestones.includes(ms.day)){
-      state.unlockedMilestones.push(ms.day);
-      state.xp = Math.max(0, state.xp + (ms.xpBonus || 0));
-      // show unlock modal
-      showMilestone(ms);
+    if (streak > highStreak) {
+      highStreak = streak;
     }
-  });
-}
-
-// update highest streak computed from data
-function updateHighest(){
-  const h = computeHighestStreak();
-  if (h > (state.highestStreak || 0)){
-    state.highestStreak = h;
+    saveStats();
   }
-}
 
-/* ---------- UI rendering ---------- */
-
-function $(sel){ return document.querySelector(sel); }
-function $all(sel){ return Array.from(document.querySelectorAll(sel)); }
-
-function renderAll(){
-  // compute stats
-  const totalClean = state.cleanDates.length;
-  const relapseCount = state.relapseDates.length;
-  const currentStreak = computeCurrentStreak();
-  updateHighest();
-  const highest = state.highestStreak || 0;
-
-  // update UI
-  $('#streakNum').textContent = currentStreak;
-  $('#highestStreak').textContent = highest;
-  $('#totalClean').textContent = totalClean;
-  $('#totalClean2').textContent = totalClean;
-  $('#relapseCount').textContent = relapseCount;
-  $('#xpCount').textContent = state.xp;
-  $('#xpText').textContent = `XP: ${state.xp}`;
-  const levelInfo = getXPProgress(state.xp);
-  $('#levelNum').textContent = levelInfo.lvl;
-  $('#xpFill').style.width = levelInfo.percent + '%';
-
-  // journals list
-  renderJournalList();
-
-  // stats modal
-  renderStatsList();
-}
-
-function renderJournalList(){
-  const container = $('#journalList');
-  container.innerHTML = '';
-  const keys = Object.keys(state.journal).sort((a,b)=> b.localeCompare(a));
-  if (keys.length === 0){
-    container.innerHTML = '<div class="item">No journal entries yet.</div>';
-    return;
+  function resetStreak() {
+    streak = 0;
+    saveStats();
   }
-  keys.forEach(k => {
-    const div = document.createElement('div');
-    div.className = 'item';
-    const short = state.journal[k].length > 120 ? state.journal[k].slice(0,120)+'…' : state.journal[k];
-    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${k}</strong><div class="muted-sm">${short}</div></div><div><button class="btn" data-date="${k}">Edit</button></div></div>`;
-    container.appendChild(div);
-  });
-  // attach edit listeners
-  $all('#journalList button').forEach(b => {
-    b.addEventListener('click', (ev)=>{
-      const date = ev.target.dataset.date;
-      const txt = state.journal[date] || '';
-      // open quick edit
-      const val = prompt(`Edit journal for ${date}`, txt);
-      if (val === null) return;
-      saveJournal(date, val);
-    });
-  });
-}
 
-function renderStatsList(){
-  const s = computeCurrentStreak();
-  const totalClean = state.cleanDates.length;
-  const stats = [
-    {k:'Current streak', v: s},
-    {k:'Highest streak', v: state.highestStreak || 0},
-    {k:'Total clean days (all time)', v: totalClean},
-    {k:'Relapses logged', v: state.relapseDates.length},
-    {k:'XP', v: state.xp},
-    {k:'Level', v: getXPProgress(state.xp).lvl},
-    {k:'Unlocked milestones', v: state.unlockedMilestones.join(', ') || 'None'},
-    {k:'Urges logged (sessions)', v: state.urgeLogs.length}
-  ];
-  const container = $('#statsList');
-  container.innerHTML = '';
-  stats.forEach(it=>{
-    const div = document.createElement('div');
-    div.className = 'item';
-    div.innerHTML = `<strong>${it.k}</strong><div class="muted-sm">${it.v}</div>`;
-    container.appendChild(div);
-  });
-}
+  function saveStats() {
+    localStorage.setItem('streak', streak);
+    localStorage.setItem('highStreak', highStreak);
+    localStorage.setItem('xp', xp);
+    document.getElementById('streak').textContent = streak;
+    document.getElementById('highStreak').textContent = highStreak;
+    document.getElementById('xp').textContent = xp;
+    updateXPBar();
+  }
 
-/* ---------- modal helpers ---------- */
-function openModal(id){ $(id).style.display = 'flex'; }
-function closeModal(id){ $(id).style.display = 'none'; }
+  function updateXPBar() {
+    document.getElementById('xpFill').style.width = (xp / xpGoal) * 100 + '%';
+    document.getElementById('xpGoal').textContent = xpGoal;
+  }
 
-/* ---------- milestone modal ---------- */
-function showMilestone(ms){
-  $('#milestoneTitle').textContent = `${ms.title} — Day ${ms.day}`;
-  $('#milestoneDesc').textContent = `Reward: +${ms.xpBonus || 0} XP`;
-  $('#milestoneReality').textContent = ms.reality || '';
-  $('#milestoneVisual').textContent = '★';
-  openModal('#modalMilestone');
-  saveData();
-}
+  function saveJournal() {
+    let text = document.getElementById('journalInput').value;
+    let date = new Date().toLocaleDateString();
+    localStorage.setItem('journal-' + date, text);
+    alert("Journal saved for " + date);
+  }
 
-/* ---------- breathing animation (box breathing 4-4-4-4) ---------- */
-let breathInterval = null;
-let breathPhase = 0; // 0 inhale,1 hold,2 exhale,3 hold
-function startBreathing(){
-  const ring = $('#breathRing');
-  const text = $('#breathText');
-  let stepSeconds = 4;
-  breathPhase = 0;
-  let secondsLeft = stepSeconds;
-  text.textContent = `Inhale • ${secondsLeft}`;
-  ring.style.transform = 'scale(0.9)';
-  if (breathInterval) clearInterval(breathInterval);
-  breathInterval = setInterval(()=>{
-    secondsLeft--;
-    if (secondsLeft <= 0){
-      breathPhase = (breathPhase + 1) % 4;
-      secondsLeft = stepSeconds;
-      // change ring scale per phase
-      if (breathPhase === 0){ ring.style.transform = 'scale(1.1)'; text.textContent = `Inhale • ${secondsLeft}`; }
-      if (breathPhase === 1){ ring.style.transform = 'scale(1.08)'; text.textContent = `Hold • ${secondsLeft}`; }
-      if (breathPhase === 2){ ring.style.transform = 'scale(0.9)'; text.textContent = `Exhale • ${secondsLeft}`; }
-      if (breathPhase === 3){ ring.style.transform = 'scale(0.95)'; text.textContent = `Hold • ${secondsLeft}`; }
-    } else {
-      // update countdown
-      const phases = ['Inhale','Hold','Exhale','Hold'];
-      text.textContent = `${phases[breathPhase]} • ${secondsLeft}`;
+  function startUrge() {
+    urgeStartTime = Date.now();
+  }
+
+  function stopUrge() {
+    if (urgeStartTime) {
+      let duration = Math.floor((Date.now() - urgeStartTime) / 1000);
+      document.getElementById('urgeTime').textContent = duration;
+      alert("Urge lasted " + duration + " seconds. You survived it!");
+      urgeStartTime = null;
     }
-  }, 1000);
-}
-function stopBreathing(){
-  const ring = $('#breathRing');
-  const text = $('#breathText');
-  if (breathInterval) { clearInterval(breathInterval); breathInterval = null; }
-  ring.style.transform = 'scale(1)';
-  text.textContent = 'Breathing stopped';
-}
-
-/* ---------- urge timer ---------- */
-let urgeTimer = null;
-let urgeStart = null;
-function startUrgeTimer(){
-  urgeStart = Date.now();
-  $('#urgeBtn').textContent = 'Stop Urge Timer';
-  urgeTimer = setInterval(()=>{
-    const s = Math.floor((Date.now() - urgeStart)/1000);
-    $('#urgeBtn').textContent = `Stop Urge Timer — ${formatTime(s)}`;
-  },500);
-}
-function stopUrgeTimer(){
-  if (!urgeStart) return;
-  const seconds = Math.round((Date.now() - urgeStart)/1000);
-  saveUrge(seconds);
-  if (urgeTimer) clearInterval(urgeTimer);
-  urgeTimer = null; urgeStart = null;
-  $('#urgeBtn').textContent = 'Start Urge Timer';
-  alert(`Urge recorded: ${formatTime(seconds)}. Well done holding on.`);
-}
-function formatTime(s){
-  if (s < 60) return `${s}s`;
-  const m = Math.floor(s/60);
-  const r = s % 60;
-  return `${m}m ${r}s`;
-}
-
-/* ---------- init UI listeners ---------- */
-
-function setup(){
-  // date inputs default to today
-  const today = todayKey();
-  $('#cleanDateInput').value = today;
-  $('#relapseDateInput').value = today;
-
-  // buttons
-  $('#logCleanBtn').addEventListener('click', ()=>{
-    const date = $('#cleanDateInput').value || todayKey();
-    const added = addCleanDate(date);
-    if (added){
-      // auto-save journal if text present
-      const txt = $('#journalTxt').value || '';
-      if (txt.trim()) saveJournal(date, txt);
-      alert('Clean day logged ✓');
-    } else {
-      alert('This day is already marked clean.');
-    }
-  });
-
-  $('#logRelapseBtn').addEventListener('click', ()=>{
-    const date = $('#relapseDateInput').value || todayKey();
-    const ok = confirm('Are you sure you want to log a relapse? This will reset streak from that day.');
-    if (!ok) return;
-    logRelapse(date);
-    alert('Relapse logged. Keep going — get back on it today.');
-  });
-
-  $('#saveJournalBtn').addEventListener('click', ()=>{
-    const txt = $('#journalTxt'].value || '';
-    const date = $('#cleanDateInput').value || todayKey();
-    saveJournal(date, txt);
-    alert('Journal saved.');
-  });
-
-  $('#viewJournalsBtn').addEventListener('click', ()=> openModal('#modalJournals'));
-  $('#openStatsBtn').addEventListener('click', ()=> openModal('#modalStats'));
-  $('#exportBtn').addEventListener('click', exportData);
-
-  $('#closeStats').addEventListener('click', ()=> closeModal('#modalStats'));
-  $('#closeMilestone').addEventListener('click', ()=> closeModal('#modalMilestone'));
-  $('#closeJournals').addEventListener('click', ()=> closeModal('#modalJournals'));
-
-  $('#emergencyBtn').addEventListener('click', ()=> openModal('#modalEmergency'));
-  $('#closeEmergency').addEventListener('click', ()=> { stopBreathing(); closeModal('#modalEmergency'); });
-
-  $('#startBreathBtn').addEventListener('click', ()=> startBreathing());
-  $('#stopBreathBtn').addEventListener('click', ()=> stopBreathing());
-
-  $('#urgeBtn').addEventListener('click', ()=>{
-    if (!urgeTimer) startUrgeTimer();
-    else stopUrgeTimer();
-  });
-
-  $('#clearDataBtn').addEventListener('click', ()=>{
-    const ok = confirm('This will erase ALL app data on this device. Are you sure?');
-    if (!ok) return;
-    localStorage.removeItem(STORAGE_KEY);
-    state = loadData();
-    renderAll();
-    alert('Data reset.');
-    closeModal('#modalStats');
-  });
-
-  // tab nav (simple)
-  $('#tabHome').addEventListener('click', ()=>{
-    setActiveTab('home');
-  });
-  $('#tabJournal').addEventListener('click', ()=> { setActiveTab('journal'); openModal('#modalJournals'); });
-  $('#tabStats').addEventListener('click', ()=> { openModal('#modalStats'); });
-  $('#tabSettings').addEventListener('click', ()=> { alert('Settings coming soon — export/reset available in Stats.'); });
-
-  // allow editing a journal from modal: handled by renderJournalList
-  renderAll();
-}
-
-function setActiveTab(name){
-  $all('.tab').forEach(t => t.classList.remove('active'));
-  if (name === 'home') $('#tabHome').classList.add('active');
-  if (name === 'journal') $('#tabJournal').classList.add('active');
-  if (name === 'stats') $('#tabStats').classList.add('active');
-}
-
-/* ---------- export data ---------- */
-function exportData(){
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'trak-data.json';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  alert('Export started. Save the file for backup.');
-}
-
-/* ---------- initial run ---------- */
-updateHighest();
-saveData();
-setup();
-
-renderAll();
-
-/* ---------- small UX tweak: animate milestone unlocks on page load if newly unlocked while app offline (skip) ---------- */
-
+  }
 </script>
+
 </body>
 </html>
